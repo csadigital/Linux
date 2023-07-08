@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<httpServerConfig>
+  <serverName>$HOSTNAME</serverName>
+  <workerProcesses>2</workerProcesses>
+  <user>nobody</user>
+  <group>nobody</group>
+  <priority>0</priority>
+  <cpuAffinity>1</cpuAffinity>
+  <chrootPath>/</chrootPath>
+  <enableChroot>0</enableChroot>
+  <enableLVE>2</enableLVE>
+  <inMemBufSize>90M</inMemBufSize>
+  <swappingDir>/tmp/lshttpd/swap</swappingDir>
+  <autoFix503>0</autoFix503>
+  <loadApacheConf>1</loadApacheConf>
+  <autoReloadApacheConf>2</autoReloadApacheConf>
+  <apacheBinPath>/usr/sbin/httpd</apacheBinPath>
+  <apacheConfFile>/etc/apache2/conf/httpd.conf</apacheConfFile>
+  <apachePortOffset>0</apachePortOffset>
+  <apacheIpOffset>0</apacheIpOffset>
+  <phpSuExec>1</phpSuExec>
+  <phpSuExecMaxConn>100</phpSuExecMaxConn>
+  <mime>$SERVER_ROOT/conf/mime.properties</mime>
+  <disableInitLogRotation>1</disableInitLogRotation>
+  <showVersionNumber>2</showVersionNumber>
+  <hideSigInErrorPage>1</hideSigInErrorPage>
+  <useIpInProxyHeader>2</useIpInProxyHeader>
+  <autoUpdateInterval>86400</autoUpdateInterval>
+  <autoUpdateDownloadPkg>1</autoUpdateDownloadPkg>
+  <adminEmails>root@localhost</adminEmails>
+  <logging>
+    <log>
+      <fileName>/var/log/apache2/error_log</fileName>
+      <logLevel>DEBUG</logLevel>
+      <debugLevel>0</debugLevel>
+      <rollingSize>2000M</rollingSize>
+      <enableStderrLog>1</enableStderrLog>
+      <enableAioLog>1</enableAioLog>
+    </log>
+    <accessLog>
+      <fileName>$SERVER_ROOT/logs/access.log</fileName>
+      <rollingSize>2000M</rollingSize>
+      <keepDays>30</keepDays>
+      <compressArchive>0</compressArchive>
+    </accessLog>
+  </logging>
+  <indexFiles>index.html, index.php, index.htm</indexFiles>
+  <htAccess>
+    <allowOverride>31</allowOverride>
+    <accessFileName>.htaccess</accessFileName>
+  </htAccess>
+  <expires>
+    <enableExpires>1</enableExpires>
+    <expiresByType>image/*=A604800,text/css=A604800,application/x-javascript=A604800,application/javascript=A604800,font/*=A604800,application/x-font-ttf=A604800</expiresByType>
+  </expires>
+  <tuning>
+    <maxConnections>100000</maxConnections>
+    <maxSSLConnections>100000</maxSSLConnections>
+    <connTimeout>120</connTimeout>
+    <maxKeepAliveReq>32767</maxKeepAliveReq>
+    <keepAliveTimeout>10</keepAliveTimeout>
+    <sndBufSize>0</sndBufSize>
+    <rcvBufSize>0</rcvBufSize>
+    <maxReqURLLen>65530</maxReqURLLen>
+    <maxReqHeaderSize>65530</maxReqHeaderSize>
+    <maxReqBodySize>500M</maxReqBodySize>
+    <maxDynRespHeaderSize>64K</maxDynRespHeaderSize>
+    <maxDynRespSize>500M</maxDynRespSize>
+    <maxCachedFileSize>4096</maxCachedFileSize>
+    <totalInMemCacheSize>20M</totalInMemCacheSize>
+    <maxMMapFileSize>256K</maxMMapFileSize>
+    <totalMMapCacheSize>40M</totalMMapCacheSize>
+    <useSendfile>1</useSendfile>
+    <useAIO>1</useAIO>
+    <AIOBlockSize>4</AIOBlockSize>
+    <enableGzipCompress>1</enableGzipCompress>
+    <compressibleTypes>default</compressibleTypes>
+    <enableDynGzipCompress>1</enableDynGzipCompress>
+    <gzipCompressLevel>9</gzipCompressLevel>
+    <enableBrCompress>6</enableBrCompress>
+    <gzipAutoUpdateStatic>1</gzipAutoUpdateStatic>
+    <gzipStaticCompressLevel>9</gzipStaticCompressLevel>
+    <brStaticCompressLevel>11</brStaticCompressLevel>
+    <gzipCacheDir>/var/lswscache/</gzipCacheDir>
+  </tuning>
+  <security>
+    <wpProtectAction>6</wpProtectAction>
+    <fileAccessControl>
+      <followSymbolLink>0</followSymbolLink>
+      <checkSymbolLink>1</checkSymbolLink>
+      <forceStrictOwnership>1</forceStrictOwnership>
+      <requiredPermissionMask>000</requiredPermissionMask>
+      <restrictedPermissionMask>000</restrictedPermissionMask>
+      <restrictedScriptPermissionMask>000</restrictedScriptPermissionMask>
+      <restrictedDirPermissionMask>000</restrictedDirPermissionMask>
+    </fileAccessControl>
+    <perClientConnLimit>
+      <staticReqPerSec>0</staticReqPerSec>
+      <dynReqPerSec>0</dynReqPerSec>
+      <outBandwidth>0</outBandwidth>
+      <inBandwidth>0</inBandwidth>
+      <softLimit>10000</softLimit>
+      <hardLimit>10000</hardLimit>
+      <gracePeriod>15</gracePeriod>
+      <banPeriod>300</banPeriod>
+    </perClientConnLimit>
+    <CGIRLimit>
+      <maxCGIInstances>200</maxCGIInstances>
+      <minUID>11</minUID>
+      <minGID>10</minGID>
+      <priority>0</priority>
+      <CPUSoftLimit>60</CPUSoftLimit>
+      <CPUHardLimit>120</CPUHardLimit>
+      <memSoftLimit>1450M</memSoftLimit>
+      <memHardLimit>1500M</memHardLimit>
+      <procSoftLimit>1400</procSoftLimit>
+      <procHardLimit>1450</procHardLimit>
+    </CGIRLimit>
+    <censorshipControl>
+      <logLevel>1</logLevel>
+      <defaultAction>deny,log,status:403</defaultAction>
+      <scanPOST>1</scanPOST>
+      <uploadTmpDir>/tmp</uploadTmpDir>
+      <uploadTmpFilePermission>666</uploadTmpFilePermission>
+      <secAuditLogEngine>0</secAuditLogEngine>
+      <secAuditLog>waflog</secAuditLog>
+    </censorshipControl>
+    <accessDenyDir>
+      <dir>/</dir>
+      <dir>/etc/*</dir>
+      <dir>/dev/*</dir>
+      <dir>$SERVER_ROOT/conf/*</dir>
+      <dir>$SERVER_ROOT/admin/conf/*</dir>
+    </accessDenyDir>
+    <accessControl>
+      <allow>ALL, 127.0.0.1T 103.21.244.0/22T, 103.22.200.0/22T, 103.31.4.0/22T, 104.16.0.0/13T, 104.24.0.0/14T, 108.162.192.0/18T, 131.0.72.0/22T, 141.101.64.0/18T, 162.158.0.0/15T, 172.64.0.0/13T, 173.245.48.0/20T, 188.114.96.0/20T, 190.93.240.0/20T, 197.234.240.0/22T, 198.41.128.0/17T, 77.92.154.45, 94.102.14.4, 159.253.42.4, 195.244.55.195, 192.0.64.0/24, 192.0.65.0/24, 192.0.66.0/24, 192.0.67.0/24, 192.0.68.0/24, 192.0.69.0/24, 192.0.70.0/24, 192.0.71.0/24, 192.0.72.0/24, 192.0.73.0/24, 192.0.74.0/24, 192.0.75.0/24, 192.0.76.0/24, 192.0.77.0/24, 192.0.78.0/24, 192.0.79.0/24, 192.0.80.0/24, 192.0.81.0/24, 192.0.82.0/24, 192.0.83.0/24, 192.0.84.0/24, 192.0.85.0/24, 192.0.86.0/24, 192.0.87.0/24, 192.0.88.0/24, 192.0.89.0/24, 192.0.90.0/24, 192.0.91.0/24, 192.0.92.0/24, 192.0.93.0/24, 192.0.94.0/24, 192.0.95.0/24, 192.0.96.0/24, 192.0.97.0/24, 192.0.98.0/24, 192.0.99.0/24, 192.0.100.0/24, 192.0.101.0/24, 192.0.102.0/24, 192.0.103.0/24, 192.0.104.0/24, 192.0.105.0/24, 192.0.106.0/24, 192.0.107.0/24, 192.0.108.0/24, 192.0.109.0/24, 192.0.110.0/24, 192.0.111.0/24, 192.0.112.0/24, 192.0.113.0/24, 192.0.114.0/24, 192.0.115.0/24, 192.0.116.0/24, 192.0.117.0/24, 192.0.118.0/24, 192.0.119.0/24, 192.0.120.0/24, 192.0.121.0/24, 192.0.122.0/24, 192.0.123.0/24, 192.0.124.0/24, 192.0.125.0/24, 192.0.126.0/24, 192.0.127.0/24, 102.129.254.77, 103.152.118.219, 103.152.118.72, 103.164.203.163, 103.188.22.15, 103.199.16.151, 103.28.90.190, 104.225.142.116, 104.244.77.37, 109.248.43.195, 109.248.43.212, 135.148.120.32, 135.148.148.230, 139.162.89.149, 139.59.21.152, 141.164.38.65, 146.59.17.163, 146.88.239.197, 147.135.115.64, 147.78.0.165, 149.28.11.90, 149.28.121.72, 152.228.171.66, 156.67.209.151, 16.170.121.215, 163.182.174.161, 163.47.20.24, 163.47.21.168, 164.52.202.100, 165.227.116.222, 170.249.218.98, 178.17.171.177, 18.192.146.200, 185.116.60.231, 185.116.60.232, 185.126.236.167, 185.126.237.129, 185.126.237.143, 185.205.187.233, 185.228.26.40, 185.53.57.40, 185.53.57.89, 188.64.184.71, 192.99.38.117, 193.203.202.215, 194.36.144.221, 195.231.17.141, 199.59.247.242, 2.58.28.32, 200.58.127.145, 201.182.97.70, 202.61.226.253, 204.10.163.237, 207.246.71.239, 209.208.26.218, 213.159.1.75, 213.183.48.170, 213.183.51.224, 213.184.85.245, 213.184.87.75, 216.238.102.30, 216.238.106.164, 216.238.110.16, 216.238.71.13, 216.238.98.33, 216.250.96.181, 27.131.106.194, 27.131.75.40, 27.131.75.41, 3.109.250.83, 31.131.4.244, 31.22.115.186, 31.220.111.172, 34.247.229.180, 37.120.131.40, 37.143.128.237, 38.129.107.18, 41.185.29.210, 41.223.52.170, 43.231.0.46, 45.124.65.86, 45.132.244.92, 45.248.77.61, 45.32.210.159, 45.32.225.122, 45.56.77.123, 45.76.17.119, 148.251.253.37, 185.187.184.84, 144.76.27.137, 148.251.253.35</allow>
+    </accessControl>
+  </security>
+  <lsrecaptcha>
+    <enabled>1</enabled>
+    <type>1</type>
+    <sensitivity>93</sensitivity>
+    <maxTries>3</maxTries>
+    <allowedRobotHits>3</allowedRobotHits>
+    <botWhiteList>
+Googlebot  
+FeedFetcher
+FeedFetcher-Google
+Chrome-Lighthouse
+APIs-Google
+Mediapartners-Google
+AdsBot-Google-Mobile
+AdsBot-Google
+Googlebot-image
+Googlebot-news
+Google Favicon
+Googlebot-Video
+Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4143.7 Safari/537.36 Chrome-Lighthouse
+Mozilla/5.0 (Linux; Android 7.0; Mo to G (4)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4143.7 Mobile Safari/537.36 Chrome-Lighthouse
+Mozilla/5.0 (compatible; Google-Structured-Data-Testing-Tool +https://search.google.com/structured-data/testing-tool)
+Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
+Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
+Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.115 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
+Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
+Mozilla/5.0 (compatible; Pinterestbot/1.0; +http://www.pinterest.com/bot.html)
+Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.40 Safari/537.36 - webvitals.dev
+Mozilla/5.0 (Linux; Android 7.0; Moto G (4)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4143.7 Mobile Safari/537.36 - webvitals.dev
+Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)
+Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)
+Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)
+Mozilla/5.0 (compatible; DuckDuckBot/1.0; +http://duckduckgo.com/duckduckbot.html)
+Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)
+facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)
+LinkedInBot/1.0 (compatible; Mozilla/5.0; Jakarta Commons-HttpClient/3.1 +http://www.linkedin.com)
+Mozilla/5.0 (compatible; Pinterestbot/1.0; +http://www.pinterest.com/bot.html)
+Slackbot-LinkExpanding (+https://api.slack.com/robots)
+Applebot/0.1 (+http://www.apple.com/go/applebot)
+WhatsApp
+Instagram
+TelegramBot (like TwitterBot)
+Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)
+Mozilla/5.0 (compatible; Pinterestbot/1.0; +http://www.pinterest.com/bot.html)
+Mozilla/5.0 (compatible; Qwantify/2.0; +https://www.qwant.com/)/2.4.0
+ZoominfoBot (zoominfobot at zoominfo dot com)
+SemrushBot/7~bl (nofollow checker;+http://www.semrush.com/bot.html)
+Mozilla/5.0 (compatible; MJ12bot/v1.4.8; http://mj12bot.com/)
+Mozilla/5.0 (compatible; AhrefsBot/7.0; +http://ahrefs.com/robot/)
+Sogou web spider/4.0(+http://www.sogou.com/docs/help/webmasters.htm#07)
+Mozilla/5.0 (compatible; Exabot/3.0; +http://www.exabot.com/go/robot)
+DotBot/1.1 http://www.dotnetdotcom.org/
+Google-Video: Googlebot-Video
+Google-Akıllı Telefon: Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/W.X.Y.Z Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
+Google-Favicon: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.75 Safari/537.36 Google Favicon
+Google-Storebot: Mozilla/5.0 (X11; Linux x86_64; Storebot-Google/1.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36
+Google-API: APIs-Google (+https://developers.google.com/webmasters/APIs-Google.html)
+Google-MobileAdsense: (Various mobile device types) (compatible; Mediapartners-Google/2.1; +http://www.google.com/bot.html)
+Google-Doğrulama: Mozilla/5.0 (compatible; Google-Site-Verification/1.0)
+Yandex-Standart: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 YaBrowser/23.5.1.759 Yowser/2.5 Safari/537.36
+Bing-Standart: Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm) Chrome/
+Pinterest-Bot: Pinterest/0.2 (+https://www.pinterest.com/bot.html)
+Pinterest-Bot: Mozilla/5.0 (compatible; Pinterestbot/1.0; +https://www.pinterest.com/bot.html)
+Pinterest-Bot: Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.96 Mobile Safari/537.36 (compatible; Pinterestbot/1.0; +https://www.pinterest.com/bot.html)
+Semrush-Bot: Mozilla/5.0 (compatible; SemrushBot/7~bl; +http://www.semrush.com/bot.html)
+Ahrefs-Bot: AhrefsBotGooglebot  
+FeedFetcher
+FeedFetcher-Google
+Chrome-Lighthouse
+APIs-Google
+Mediapartners-Google
+AdsBot-Google-Mobile
+AdsBot-Google
+Googlebot-image
+Googlebot-news
+Google Favicon
+Googlebot-Video
+Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4143.7 Safari/537.36 Chrome-Lighthouse
+Mozilla/5.0 (Linux; Android 7.0; Mo to G (4)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4143.7 Mobile Safari/537.36 Chrome-Lighthouse
+Mozilla/5.0 (compatible; Google-Structured-Data-Testing-Tool +https://search.google.com/structured-data/testing-tool)
+Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
+Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
+Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.115 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
+Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
+Mozilla/5.0 (compatible; Pinterestbot/1.0; +http://www.pinterest.com/bot.html)
+Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.40 Safari/537.36 - webvitals.dev
+Mozilla/5.0 (Linux; Android 7.0; Moto G (4)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4143.7 Mobile Safari/537.36 - webvitals.dev
+Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)
+Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)
+Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)
+Mozilla/5.0 (compatible; DuckDuckBot/1.0; +http://duckduckgo.com/duckduckbot.html)
+Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)
+facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)
+LinkedInBot/1.0 (compatible; Mozilla/5.0; Jakarta Commons-HttpClient/3.1 +http://www.linkedin.com)
+Mozilla/5.0 (compatible; Pinterestbot/1.0; +http://www.pinterest.com/bot.html)
+Slackbot-LinkExpanding (+https://api.slack.com/robots)
+Applebot/0.1 (+http://www.apple.com/go/applebot)
+WhatsApp
+Instagram
+TelegramBot (like TwitterBot)
+Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)
+Mozilla/5.0 (compatible; Pinterestbot/1.0; +http://www.pinterest.com/bot.html)
+Mozilla/5.0 (compatible; Qwantify/2.0; +https://www.qwant.com/)/2.4.0
+ZoominfoBot (zoominfobot at zoominfo dot com)
+SemrushBot/7~bl (nofollow checker;+http://www.semrush.com/bot.html)
+Mozilla/5.0 (compatible; MJ12bot/v1.4.8; http://mj12bot.com/)
+Mozilla/5.0 (compatible; AhrefsBot/7.0; +http://ahrefs.com/robot/)
+Sogou web spider/4.0(+http://www.sogou.com/docs/help/webmasters.htm#07)
+Mozilla/5.0 (compatible; Exabot/3.0; +http://www.exabot.com/go/robot)
+DotBot/1.1 http://www.dotnetdotcom.org/
+Google-Video: Googlebot-Video
+Google-Akıllı Telefon: Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/W.X.Y.Z Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
+Google-Favicon: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.75 Safari/537.36 Google Favicon
+Google-Storebot: Mozilla/5.0 (X11; Linux x86_64; Storebot-Google/1.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36
+Google-API: APIs-Google (+https://developers.google.com/webmasters/APIs-Google.html)
+Google-MobileAdsense: (Various mobile device types) (compatible; Mediapartners-Google/2.1; +http://www.google.com/bot.html)
+Google-Doğrulama: Mozilla/5.0 (compatible; Google-Site-Verification/1.0)
+Yandex-Standart: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 YaBrowser/23.5.1.759 Yowser/2.5 Safari/537.36
+Bing-Standart: Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm) Chrome/
+Pinterest-Bot: Pinterest/0.2 (+https://www.pinterest.com/bot.html)
+Pinterest-Bot: Mozilla/5.0 (compatible; Pinterestbot/1.0; +https://www.pinterest.com/bot.html)
+Pinterest-Bot: Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.96 Mobile Safari/537.36 (compatible; Pinterestbot/1.0; +https://www.pinterest.com/bot.html)
+Semrush-Bot: Mozilla/5.0 (compatible; SemrushBot/7~bl; +http://www.semrush.com/bot.html)
+Ahrefs-Bot: AhrefsBot
+    </botWhiteList>
+  </lsrecaptcha>
+  <phpConfig>
+    <maxConns>2000</maxConns>
+    <env>PHP_LSAPI_CHILDREN=2000</env>
+    <initTimeout>60</initTimeout>
+    <retryTimeout>0</retryTimeout>
+    <pcKeepAliveTimeout>1</pcKeepAliveTimeout>
+    <respBuffer>0</respBuffer>
+    <extMaxIdleTime>60</extMaxIdleTime>
+    <memSoftLimit>2047M</memSoftLimit>
+    <memHardLimit>2047M</memHardLimit>
+    <procSoftLimit>1400</procSoftLimit>
+    <procHardLimit>1500</procHardLimit>
+  </phpConfig>
+  <railsDefaults>
+    <maxConns>5</maxConns>
+    <env>LSAPI_MAX_IDLE=60</env>
+    <initTimeout>60</initTimeout>
+    <retryTimeout>0</retryTimeout>
+    <pcKeepAliveTimeout>60</pcKeepAliveTimeout>
+    <respBuffer>0</respBuffer>
+    <backlog>50</backlog>
+    <runOnStartUp>0</runOnStartUp>
+    <extMaxIdleTime>300</extMaxIdleTime>
+    <priority>3</priority>
+    <memSoftLimit>2047M</memSoftLimit>
+    <memHardLimit>2047M</memHardLimit>
+    <procSoftLimit>400</procSoftLimit>
+    <procHardLimit>500</procHardLimit>
+  </railsDefaults>
+</httpServerConfig>
