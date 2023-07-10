@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# CloudLinux kernel ayarlarını düzenleme
+echo "vm.swappiness = 10" >> /etc/sysctl.conf
+echo "vm.vfs_cache_pressure = 50" >> /etc/sysctl.conf
+
+# RAM optimizasyonu
+echo "vm.dirty_background_ratio = 5" >> /etc/sysctl.conf
+echo "vm.dirty_ratio = 10" >> /etc/sysctl.conf
+
+# Swap ayarları
+echo "vm.swappiness = 10" >> /etc/sysctl.conf
+echo "vm.vfs_cache_pressure = 50" >> /etc/sysctl.conf
+echo "vm.dirty_background_bytes = 67108864" >> /etc/sysctl.conf
+echo "vm.dirty_bytes = 134217728" >> /etc/sysctl.conf
+
+# Ayarları yükle
+sysctl -p
+
+# CPU performansı için tuning ayarları
+echo "performance" | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+
+# I/O performansı için tuning ayarları
+echo "noop" > /sys/block/sda/queue/scheduler
+echo "noop" > /sys/block/sdb/queue/scheduler
+
+# LiteSpeed Web Server yapılandırma dosyasını düzenleme
+sed -i 's/# LSAPI_EXTERNAL_APP/LSAPI_EXTERNAL_APP/g' /usr/local/lsws/conf/httpd_config.conf
+sed -i 's/# LSAPI_AVOID_FORK/LSAPI_AVOID_FORK/g' /usr/local/lsws/conf/httpd_config.conf
+sed -i 's/# LSAPI_CHILDREN/LSAPI_CHILDREN/g' /usr/local/lsws/conf/httpd_config.conf
+sed -i 's/# LSAPI_MAX_PROCESS_TIME/LSAPI_MAX_PROCESS_TIME/g' /usr/local/lsws/conf/httpd_config.conf
+
+# Anti-DDoS ayarlarını ekle
+echo "dosProtect 5" >> /usr/local/lsws/conf/httpd_config.conf
+echo "dosMaxConn 100" >> /usr/local/lsws/conf/httpd_config.conf
+echo "dosMaxConnPerIP 20" >> /usr/local/lsws/conf/httpd_config.conf
+echo "dosDelay 10" >> /usr/local/lsws/conf/httpd_config.conf
+
+# MySQL/MariaDB portunu dışarıdan erişime kapat
+echo "bind-address = 127.0.0.1" | sudo tee -a /etc/my.cnf
+echo "skip-networking" | sudo tee -a /etc/my.cnf
+
+# LiteSpeed Web Server yeniden başlatma
+/usr/local/lsws/bin/lswsctrl restart
+
+echo "Ram ve Swap ayarlarınız ile performans ayarlarınız başarıyla yapıldı."
+
+echo "CSA Digital!"
