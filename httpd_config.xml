@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<httpServerConfig>
+<?xml version="1.0" encoding="UTF-8"?><httpServerConfig>
   <serverName>$HOSTNAME</serverName>
   <workerProcesses>2</workerProcesses>
   <user>nobody</user>
@@ -117,6 +116,7 @@
       <procHardLimit>1450</procHardLimit>
     </CGIRLimit>
     <censorshipControl>
+      <enableCensorship>1</enableCensorship>
       <logLevel>1</logLevel>
       <defaultAction>deny,log,status:403</defaultAction>
       <scanPOST>1</scanPOST>
@@ -139,7 +139,7 @@
   <lsrecaptcha>
     <enabled>1</enabled>
     <type>1</type>
-    <sensitivity>93</sensitivity>
+    <sensitivity>97</sensitivity>
     <maxTries>3</maxTries>
     <allowedRobotHits>3</allowedRobotHits>
     <botWhiteList>
