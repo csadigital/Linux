@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # CPU performans ayarları
-echo "performance" | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+for cpu in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
+    echo "performance" | tee "$cpu"
+done
 
 # Disk performans ayarları
 echo "noop" > /sys/block/sda/queue/scheduler
@@ -42,42 +44,8 @@ max_heap_table_size = 64M" >> /etc/my.cnf
 service mariadb restart
 
 # PHP optimize etme
-PHP_VERSIONS=("5.6" "7.0" "7.1" "7.2" "7.3" "7.4" "8.0" "8.1" "8.2")
-
-for version in "${PHP_VERSIONS[@]}"
-do
-    # PHP sürümünü etkinleştirme
-    /usr/local/cpanel/bin/rebuild_phpconf --default=$version
-    
-    # PHP yapılandırma dosyasını düzenleme
-    PHP_INI_PATH="/opt/cpanel/ea-php$version/root/etc/php.ini"
-    
-    sed -i 's/memory_limit = .*/memory_limit = 256M/' $PHP_INI_PATH
-    sed -i 's/max_execution_time = .*/max_execution_time = 300/' $PHP_INI_PATH
-    sed -i 's/max_input_time = .*/max_input_time = 300/' $PHP_INI_PATH
-    sed -i 's/post_max_size = .*/post_max_size = 100M/' $PHP_INI_PATH
-    sed -i 's/upload_max_filesize = .*/upload_max_filesize = 100M/' $PHP_INI_PATH
-    sed -i 's/max_file_uploads = .*/max_file_uploads = 20/' $PHP_INI_PATH
-    sed -i 's/;date.timezone.*/date.timezone = "Europe\/Istanbul"/' $PHP_INI_PATH
-    
-    # PHP-FPM yapılandırma dosyasını düzenleme (gerekirse)
-    PHP_FPM_CONF_PATH="/opt/cpanel/ea-php$version/root/etc/php-fpm.conf"
-    
-    if [ -f $PHP_FPM_CONF_PATH ]; then
-        sed -i 's/pm.max_children.*/pm.max_children = 50/' $PHP_FPM_CONF_PATH
-        sed -i 's/pm.start_servers.*/pm.start_servers = 10/' $PHP_FPM_CONF_PATH
-        sed -i 's/pm.min_spare_servers.*/pm.min_spare_servers = 5/' $PHP_FPM_CONF_PATH
-        sed -i 's/pm.max_spare_servers.*/pm.max_spare_servers = 20/' $PHP_FPM_CONF_PATH
-        sed -i 's/;pm.max_requests.*/pm.max_requests = 500/' $PHP_FPM_CONF_PATH
-    fi
-done
-
-# Perl optimize etme
-PERL_OPTIMIZE_FILE="/var/cpanel/perl5/lib/perl5/cPanel/ConfigOptimizer.pm"
-
-sed -i 's/^#\[backup\]/\[backup\]/' $PERL_OPTIMIZE_FILE
-sed -i 's/^#disablebackup=0/disablebackup=1/' $PERL_OPTIMIZE_FILE
-sed -i 's/^#skipcpbackup=0/skipcpbackup=1/' $PERL_OPTIMIZE_FILE
+sed -i 's/memory_limit = .*/memory_limit = 256M/' /etc/php.ini
+systemctl restart httpd.service
 
 # EasyApache derlemesi ve optimize etme
 cd /usr/local/cpanel/whostmgr/docroot/cgi/
@@ -100,15 +68,14 @@ echo "* soft nofile 65536" >> /etc/security/limits.conf
 echo "* hard nofile 65536" >> /etc/security/limits.conf
 
 # Apache yapılandırması
-sed -i 's/ServerTokens .*/ServerTokens Prod/' /etc/apache2/conf/httpd.conf
-sed -i 's/ServerSignature .*/ServerSignature Off/' /etc/apache2/conf/httpd.conf
-sed -i 's/TraceEnable .*/TraceEnable Off/' /etc/apache2/conf/httpd.conf
+if [ -f "/etc/httpd/conf/httpd.conf" ]; then
+    sed -i 's/ServerTokens .*/ServerTokens Prod/' /etc/httpd/conf/httpd.conf
+    sed -i 's/ServerSignature .*/ServerSignature Off/' /etc/httpd/conf/httpd.conf
+    sed -i 's/TraceEnable .*/TraceEnable Off/' /etc/httpd/conf/httpd.conf
+fi
 
 # PHP yapılandırması
 sed -i 's/expose_php = .*/expose_php = Off/' /etc/php.ini
-
-# Symlink koruması
-echo "Options -FollowSymLinks -Indexes" >> /etc/httpd/conf/httpd.conf
 
 # Firewall ayarları
 SSH_PORT=2220
@@ -129,14 +96,16 @@ csf -r
 curl -o /etc/csf/csf.allow https://raw.githubusercontent.com/csadigital/cPanel-Auto-Config/main/csf.allow
 
 # Tweak Settings yapılandırmaları
-sed -i 's/^ALWAYS_ADD_DNSSEC_FOR_ZONES=yes/ALWAYS_ADD_DNSSEC_FOR_ZONES=no/' /var/cpanel/cpanel.config
-sed -i 's/^ALLOW_IP_ADD=2/ALLOW_IP_ADD=0/' /var/cpanel/cpanel.config
-sed -i 's/^ALLOW_ISP_CONFIG=0/ALLOW_ISP_CONFIG=1/' /var/cpanel/cpanel.config
-sed -i 's/^CPANEL=1/CPANEL=0/' /var/cpanel/cpanel.config
-sed -i 's/^USE_CPANEL_STYLE=1/USE_CPANEL_STYLE=0/' /var/cpanel/cpanel.config
-sed -i 's/^DISABLE_POP3S=0/DISABLE_POP3S=1/' /var/cpanel/cpanel.config
-sed -i 's/^DISABLE_IMAPS=0/DISABLE_IMAPS=1/' /var/cpanel/cpanel.config
-sed -i 's/^EMAIL_ALLOW_USER_CONFIG=1/EMAIL_ALLOW_USER_CONFIG=0/' /var/cpanel/cpanel.config
+if [ -f "/var/cpanel/cpanel.config" ]; then
+    sed -i 's/^ALWAYS_ADD_DNSSEC_FOR_ZONES=yes/ALWAYS_ADD_DNSSEC_FOR_ZONES=no/' /var/cpanel/cpanel.config
+    sed -i 's/^ALLOW_IP_ADD=2/ALLOW_IP_ADD=0/' /var/cpanel/cpanel.config
+    sed -i 's/^ALLOW_ISP_CONFIG=0/ALLOW_ISP_CONFIG=1/' /var/cpanel/cpanel.config
+    sed -i 's/^CPANEL=1/CPANEL=0/' /var/cpanel/cpanel.config
+    sed -i 's/^USE_CPANEL_STYLE=1/USE_CPANEL_STYLE=0/' /var/cpanel/cpanel.config
+    sed -i 's/^DISABLE_POP3S=0/DISABLE_POP3S=1/' /var/cpanel/cpanel.config
+    sed -i 's/^DISABLE_IMAPS=0/DISABLE_IMAPS=1/' /var/cpanel/cpanel.config
+    sed -i 's/^EMAIL_ALLOW_USER_CONFIG=1/EMAIL_ALLOW_USER_CONFIG=0/' /var/cpanel/cpanel.config
+fi
 
 /scripts/restartsrv_cpsrvd
 
@@ -164,64 +133,10 @@ session.use_only_cookies = 1
 session.cookie_secure = 1" >> /etc/php.ini
 
 echo "LimitRequestBody 10485760
-Timeout 60
-KeepAlive Off
-<IfModule mod_reqtimeout.c>
-  RequestReadTimeout header=20-40,MinRate=500 body=20,MinRate=500
-</IfModule>" >> /etc/httpd/conf/httpd.conf
+Timeout 300" >> /etc/httpd/conf/httpd.conf
 
-echo "mod_evasive settings:
-<IfModule mod_evasive24.c>
-    DOSHashTableSize 3097
-    DOSPageCount 5
-    DOSSiteCount 100
-    DOSPageInterval 1
-    DOSSiteInterval 1
-    DOSBlockingPeriod 10
-    DOSEmailNotify admin@example.com
-    DOSLogDir /var/log/mod_evasive
-    DOSWhitelist 127.0.0.1
-    DOSWhitelist 192.168.0.*
-</IfModule>" >> /etc/httpd/conf/httpd.conf
-
-echo "ModSecurity settings:
-<IfModule mod_security2.c>
-    SecRequestBodyAccess On
-    SecRequestBodyLimit 13107200
-    SecRequestBodyNoFilesLimit 131072
-    SecRequestBodyInMemoryLimit 131072
-    SecResponseBodyAccess Off
-    SecResponseBodyMimeType text/plain text/html text/xml
-    SecResponseBodyLimit 524288
-    SecServerSignature Off
-    SecTmpDir /tmp
-    SecDataDir /tmp
-    SecAuditEngine RelevantOnly
-    SecAuditLogRelevantStatus ^5
-    SecAuditLogParts ABIJDEFHZ
-    SecAuditLogType Serial
-    SecAuditLog /var/log/httpd/modsec_audit.log
-    SecDebugLog /var/log/httpd/modsec_debug.log
-    SecDebugLogLevel 0
-    SecAuditLogStorageDir /var/log/httpd/audit/
-    SecPcreMatchLimit 1000
-    SecPcreMatchLimitRecursion 1000
-    SecRuleEngine On
-    SecRequestBodyLimitAction Reject
-    SecRule REQUEST_HEADERS:Content-Type "text/xml" \
-    "id:'200000',phase:1,t:none,t:lowercase,pass,nolog,ctl:requestBodyProcessor=XML"
-</IfModule>" >> /etc/httpd/conf/httpd.conf
-
-echo "Symlink koruması
-<Directory />
-    Options -FollowSymLinks
-</Directory>" >> /etc/httpd/conf/httpd.conf
-
-# CSF allow IP dosyasını ekleme
-cat << EOF >> /etc/csf/csf.allow
-# Başlangıç CSF Allow IP Listesi
-$(curl -s https://raw.githubusercontent.com/csadigital/cPanel-Auto-Config/main/csf.allow)
-# Son CSF Allow IP Listesi
-EOF
+# Son işlemler
+service httpd restart
+service csf restart
 
 echo "Optimizasyon tamamlandı."
