@@ -106,6 +106,72 @@ function optimize_mysql() {
     echo -e "${GREEN}MySQL optimize işlemi tamamlandı.${NC}"
 }
 
+# Fonksiyon: cPanel Kurulumu CentOS ve AlmaLinux İçin
+function install_cpanel() {
+    echo -e "${GREEN}cPanel kurulumu yapılıyor...${NC}"
+    cd /home
+    curl -o latest -L https://securedownloads.cpanel.net/latest
+    sh latest
+}
+
+# Fonksiyon: DirectAdmin Kurulumu CentOS ve AlmaLinux İçin
+function install_directadmin() {
+    echo -e "${GREEN}DirectAdmin kurulumu yapılıyor...${NC}"
+    wget -O setup.sh https://www.directadmin.com/setup.sh
+    chmod 755 setup.sh
+    ./setup.sh
+}
+
+# Fonksiyon: CyberPanel Kurulumu CentOS ve AlmaLinux İçin
+function install_cyberpanel() {
+    echo -e "${GREEN}CyberPanel kurulumu yapılıyor...${NC}"
+    sh <(curl https://cyberpanel.net/install.sh || wget -O - https://cyberpanel.net/install.sh)
+}
+
+# Fonksiyon: CentOS Web Panel (CWP) Kurulumu CentOS İçin
+function install_cwp() {
+    echo -e "${GREEN}CentOS Web Panel (CWP) kurulumu yapılıyor...${NC}"
+    wget http://centos-webpanel.com/cwp-el7-latest
+    sh cwp-el7-latest
+}
+
+# Fonksiyon: Plesk Panel Kurulumu CentOS ve AlmaLinux İçin
+function install_pleskpanel() {
+    echo -e "${GREEN}Plesk Panel kurulumu yapılıyor...${NC}"
+    sh <(curl https://installer.plesk.com/plesk-installer || wget -O - https://installer.plesk.com/plesk-installer)
+}
+
+# Fonksiyon: Kurulumlar Menüsü
+function installation_menu() {
+    while true
+    do
+        clear
+        echo -e "${CYAN}========== CSA Linux Bot - Kurulumlar Menüsü ==========${NC}"
+        echo -e "${GREEN}1. cPanel Kurulumu"
+        echo "2. DirectAdmin Kurulumu"
+        echo "3. CyberPanel Kurulumu"
+        echo "4. CentOS Web Panel (CWP) Kurulumu"
+        echo "5. Plesk Panel Kurulumu"
+        echo -e "0. Geri Dön${NC}"
+        echo -n "Seçiminizi girin: "
+
+        read choice
+
+        case $choice in
+            1) install_cpanel ;;
+            2) install_directadmin ;;
+            3) install_cyberpanel ;;
+            4) install_cwp ;;
+            5) install_pleskpanel ;;
+            0) return ;;
+            *) echo -e "${RED}Geçersiz seçim. Tekrar deneyin.${NC}" ; sleep 2 ;;
+        esac
+
+        echo -e "${CYAN}Kurulum tamamlandı! Devam etmek için Enter tuşuna basın.${NC}"
+        read
+    done
+}
+
 # Ana menü
 function main_menu() {
     while true
@@ -126,6 +192,7 @@ function main_menu() {
         echo "12. Litespeed Restart"
         echo "13. Apache Restart"
         echo "14. MySQL Optimize"
+        echo -e "15. Kurulumlar Menüsü"
         echo -e "0. Çıkış${NC}"
         echo -n "Seçiminizi girin: "
 
@@ -146,6 +213,7 @@ function main_menu() {
             12) restart_litespeed ;;
             13) restart_apache ;;
             14) optimize_mysql ;;
+            15) installation_menu ;;
             0) echo -e "${RED}Çıkış yapılıyor.${NC}" ; exit ;;
             *) echo -e "${RED}Geçersiz seçim. Tekrar deneyin.${NC}" ; sleep 2 ;;
         esac
