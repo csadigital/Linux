@@ -3,26 +3,17 @@
 # CloudLinux kernel ayarlarını düzenleme
 echo "vm.swappiness = 10" >> /etc/sysctl.conf
 echo "vm.vfs_cache_pressure = 50" >> /etc/sysctl.conf
-
-# RAM optimizasyonu
 echo "vm.dirty_background_ratio = 5" >> /etc/sysctl.conf
 echo "vm.dirty_ratio = 10" >> /etc/sysctl.conf
-
-# Swap ayarları
-echo "vm.swappiness = 10" >> /etc/sysctl.conf
-echo "vm.vfs_cache_pressure = 50" >> /etc/sysctl.conf
 echo "vm.dirty_background_bytes = 67108864" >> /etc/sysctl.conf
 echo "vm.dirty_bytes = 134217728" >> /etc/sysctl.conf
 
 # Ayarları yükle
 sysctl -p
 
-
 # I/O performansı için tuning ayarları
 echo "noop" > /sys/block/sda/queue/scheduler
 echo "noop" > /sys/block/sdb/queue/scheduler
-#!/bin/bash
-
 
 # MySQL/MariaDB portunu dışarıdan erişime kapat
 echo "bind-address = 127.0.0.1" | sudo tee -a /etc/my.cnf
