@@ -1,15 +1,17 @@
 #!/bin/bash
 
-# Renkli yazılar için renk tanımlamaları
+# Renk tanımlamaları
 GREEN='\033[0;32m'
 CYAN='\033[0;36m'
-NC='\033[0m' # No Color
+RED='\033[0;31m'
+NC='\033[0m' # Renk sıfırlama
 
 # Fonksiyon: CSF Algılama Modu Aç
 function enable_csf_detection() {
     echo -e "${GREEN}CSF Algılama Modu açılıyor...${NC}"
     chkconfig --levels 235 csf on
     chkconfig --levels 235 lfd on
+    echo -e "${GREEN}CSF Algılama Modu başarıyla açıldı.${NC}"
 }
 
 # Fonksiyon: CSF Algılama Modu Kapat
@@ -17,6 +19,7 @@ function disable_csf_detection() {
     echo -e "${GREEN}CSF Algılama Modu kapatılıyor...${NC}"
     chkconfig --levels 235 csf off
     chkconfig --levels 235 lfd off
+    echo -e "${GREEN}CSF Algılama Modu başarıyla kapatıldı.${NC}"
 }
 
 # Fonksiyon: CSF Kurulum ve Ayarlar
@@ -86,57 +89,70 @@ function change_ssh_port() {
 function restart_litespeed() {
     echo -e "${GREEN}Litespeed yeniden başlatılıyor...${NC}"
     systemctl restart lsws
+    echo -e "${GREEN}Litespeed başarıyla yeniden başlatıldı.${NC}"
 }
 
 # Fonksiyon: Apache Restart
 function restart_apache() {
     echo -e "${GREEN}Apache yeniden başlatılıyor...${NC}"
     systemctl restart apache2
+    echo -e "${GREEN}Apache başarıyla yeniden başlatıldı.${NC}"
+}
+
+# Fonksiyon: MySQL Optimize
+function optimize_mysql() {
+    echo -e "${GREEN}MySQL optimize işlemi gerçekleştiriliyor...${NC}"
+    mysqlcheck --auto-repair --optimize --all-databases
+    echo -e "${GREEN}MySQL optimize işlemi tamamlandı.${NC}"
 }
 
 # Ana menü
 function main_menu() {
-    clear
-    echo -e "${CYAN}========== CSA Linux Bot - Linux Ayar Scripti ==========${NC}"
-    echo "1. CSF Algılama Modu Aç"
-    echo "2. CSF Algılama Modu Kapat"
-    echo "3. CSF Kurulum ve Ayarlar"
-    echo "4. Litespeed Ayarlar"
-    echo "5. SSH Ayarlar"
-    echo "6. Swap Performans Kernel"
-    echo "7. CSF Katı DDoS Ayarları"
-    echo "8. Gerçek disk kullanımını görme"
-    echo "9. Boş RAM durumunu görme"
-    echo "10. Hostname Değiştirme"
-    echo "11. SSH Portu Değiştirme"
-    echo "12. Litespeed Restart"
-    echo "13. Apache Restart"
-    echo "0. Çıkış"
-    echo -n "Seçiminizi girin: "
+    while true
+    do
+        clear
+        echo -e "${CYAN}========== CSA Linux Bot - Linux Ayar Scripti ==========${NC}"
+        echo -e "${GREEN}1. CSF Algılama Modu Aç"
+        echo "2. CSF Algılama Modu Kapat"
+        echo "3. CSF Kurulum ve Ayarlar"
+        echo "4. Litespeed Ayarlar"
+        echo "5. SSH Ayarlar"
+        echo "6. Swap Performans Kernel"
+        echo "7. CSF Katı DDoS Ayarları"
+        echo "8. Gerçek disk kullanımını görme"
+        echo "9. Boş RAM durumunu görme"
+        echo "10. Hostname Değiştirme"
+        echo "11. SSH Portu Değiştirme"
+        echo "12. Litespeed Restart"
+        echo "13. Apache Restart"
+        echo "14. MySQL Optimize"
+        echo -e "0. Çıkış${NC}"
+        echo -n "Seçiminizi girin: "
 
-    read choice
+        read choice
 
-    case $choice in
-        1) enable_csf_detection ;;
-        2) disable_csf_detection ;;
-        3) install_csf ;;
-        4) configure_litespeed ;;
-        5) configure_ssh ;;
-        6) configure_swap_performance ;;
-        7) configure_csf_ddos ;;
-        8) show_disk_usage ;;
-        9) show_free_ram ;;
-        10) change_hostname ;;
-        11) change_ssh_port ;;
-        12) restart_litespeed ;;
-        13) restart_apache ;;
-        0) exit ;;
-        *) echo -e "${GREEN}Geçersiz seçim. Tekrar deneyin.${NC}" ; sleep 2 ; main_menu ;;
-    esac
+        case $choice in
+            1) enable_csf_detection ;;
+            2) disable_csf_detection ;;
+            3) install_csf ;;
+            4) configure_litespeed ;;
+            5) configure_ssh ;;
+            6) configure_swap_performance ;;
+            7) configure_csf_ddos ;;
+            8) show_disk_usage ;;
+            9) show_free_ram ;;
+            10) change_hostname ;;
+            11) change_ssh_port ;;
+            12) restart_litespeed ;;
+            13) restart_apache ;;
+            14) optimize_mysql ;;
+            0) echo -e "${RED}Çıkış yapılıyor.${NC}" ; exit ;;
+            *) echo -e "${RED}Geçersiz seçim. Tekrar deneyin.${NC}" ; sleep 2 ;;
+        esac
 
-    echo -e "${CYAN}İşlem tamamlandı! Ana menüye dönülüyor...${NC}"
-    sleep 2
-    main_menu
+        echo -e "${CYAN}İşlem tamamlandı! Devam etmek için Enter tuşuna basın.${NC}"
+        read
+    done
 }
 
 main_menu
