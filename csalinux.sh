@@ -3,6 +3,7 @@
 # Renkli yazılar için renk tanımlamaları
 GREEN='\033[0;32m'
 CYAN='\033[0;36m'
+RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 # Fonksiyon: Hostname Ayarı
@@ -204,29 +205,34 @@ function configure_csf_ddos() {
 function main_menu() {
     clear
     echo -e "${CYAN}========== Linux Ayar Scripti ==========${NC}"
-    echo "1. Hostname Ayarı"
-    echo "2. DNS Ayarları"
-    echo "3. Zaman Dilimi Ayarı"
-    echo "4. SSH Root Girişi Engelleme"
-    echo "5. Oturum Sonunda Kapatma Mesajı"
-    echo "6. Güvenlik İçin Gereksiz Hizmetleri Devre Dışı Bırakma"
-    echo "7. Güvenlik Duvarı Ayarı"
-    echo "8. Swap Dosyası Ayarı"
-    echo "9. Otomatik Paket Güncelleme ve Kurulum Ayarı"
-    echo "10. Kötü Amaçlı Yazılım Tarayıcısı Kurulumu"
-    echo "11. SSH Anahtar Tabanlı Kimlik Doğrulama Ayarı"
-    echo "12. Oturum Süresini Ayarla"
-    echo "13. Disk Kullanımı Kontrolü"
-    echo "14. Sistem Günlüklerini Temizle"
-    echo "15. Giriş Başarısızlıklarını Günlüğe Kaydetme"
-    echo "16. Güvenlik Duvarı Loglarını Günlüğe Kaydetme"
-    echo "17. Güvenlik için Root Olmayan Kullanıcı Oluşturma"
-    echo "18. Şifre Karmaşıklığı Ayarı"
-    echo "19. Uzak Sunucu Bağlantıları İçin SSH Portunu Değiştirme"
-    echo "20. Dosya ve Dizin İzinleri Ayarı"
-    echo "21. Fail2ban Kurulum ve Ayarlar"
-    echo "22. Fail2ban Grafik Raporlama"
-    echo "0. Çıkış"
+    echo -e "${CYAN}1. Hostname Ayarı"
+    echo -e "${CYAN}2. DNS Ayarları"
+    echo -e "${CYAN}3. Zaman Dilimi Ayarı"
+    echo -e "${CYAN}4. SSH Root Girişi Engelleme"
+    echo -e "${CYAN}5. Oturum Sonunda Kapatma Mesajı"
+    echo -e "${CYAN}6. Güvenlik İçin Gereksiz Hizmetleri Devre Dışı Bırakma"
+    echo -e "${CYAN}7. Güvenlik Duvarı Ayarı"
+    echo -e "${CYAN}8. Swap Dosyası Ayarı"
+    echo -e "${CYAN}9. Otomatik Paket Güncelleme ve Kurulum Ayarı"
+    echo -e "${CYAN}10. Kötü Amaçlı Yazılım Tarayıcısı Kurulumu"
+    echo -e "${CYAN}11. SSH Anahtar Tabanlı Kimlik Doğrulama Ayarı"
+    echo -e "${CYAN}12. Oturum Süresini Ayarla"
+    echo -e "${CYAN}13. Disk Kullanımı Kontrolü"
+    echo -e "${CYAN}14. Sistem Günlüklerini Temizle"
+    echo -e "${CYAN}15. Giriş Başarısızlıklarını Günlüğe Kaydetme"
+    echo -e "${CYAN}16. Güvenlik Duvarı Loglarını Günlüğe Kaydetme"
+    echo -e "${CYAN}17. Güvenlik için Root Olmayan Kullanıcı Oluşturma"
+    echo -e "${CYAN}18. Şifre Karmaşıklığı Ayarı"
+    echo -e "${CYAN}19. Uzak Sunucu Bağlantıları İçin SSH Portunu Değiştirme"
+    echo -e "${CYAN}20. Dosya ve Dizin İzinleri Ayarı"
+    echo -e "${CYAN}21. CSF Algılama Modu Aç"
+    echo -e "${CYAN}22. CSF Algılama Modu Kapat"
+    echo -e "${CYAN}23. CSF Kurulum ve Ayarlar"
+    echo -e "${CYAN}24. Litespeed Ayarlar"
+    echo -e "${CYAN}25. SSH Ayarlar"
+    echo -e "${CYAN}26. Swap Performans Kernel"
+    echo -e "${CYAN}27. CSF Katı DDoS Ayarları"
+    echo -e "${CYAN}0. Çıkış"
     echo -n "Seçiminizi girin: "
 
     read choice
@@ -252,10 +258,15 @@ function main_menu() {
         18) set_password_complexity ;;
         19) change_ssh_port ;;
         20) set_file_permissions ;;
-        21) install_fail2ban ;;
-        22) fail2ban_graph ;;
+        21) enable_csf_detection ;;
+        22) disable_csf_detection ;;
+        23) install_csf ;;
+        24) configure_litespeed ;;
+        25) configure_ssh ;;
+        26) configure_swap_performance ;;
+        27) configure_csf_ddos ;;
         0) exit ;;
-        *) echo -e "${GREEN}Geçersiz seçim. Tekrar deneyin.${NC}" ; sleep 2 ; main_menu ;;
+        *) echo -e "${RED}Geçersiz seçim. Tekrar deneyin.${NC}" ; sleep 2 ; main_menu ;;
     esac
 
     echo -e "${CYAN}İşlem tamamlandı! Ana menüye dönülüyor...${NC}"
