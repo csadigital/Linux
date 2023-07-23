@@ -9,8 +9,8 @@ NC='\033[0m' # Renk sıfırlama
 # Fonksiyon: Gerekli araçları yükle
 function install_required_tools() {
     echo -e "${GREEN}Gerekli araçlar yükleniyor...${NC}"
-    sudo apt-get update
-    sudo apt-get install -y git curl wget
+    sudo yum -yupdate -y 
+    sudo yum -yinstall -y git curl wget
     echo -e "${GREEN}Gerekli araçlar başarıyla yüklendi.${NC}"
 }
 
