@@ -9,9 +9,10 @@ NC='\033[0m' # Renk sıfırlama
 # Fonksiyon: Gerekli araçları yükle
 function install_required_tools() {
     echo -e "${GREEN}Gerekli araçlar yükleniyor...${NC}"
-   yum install wget - y
-   yum install git -y 
-   yum install curl -y 
+sudo yum install git
+sudo yum install curl
+sudo yum install nano
+
     echo -e "${GREEN}Gerekli araçlar başarıyla yüklendi.${NC}"
 }
 
