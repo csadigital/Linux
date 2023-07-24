@@ -15,22 +15,22 @@ function install_required_tools() {
 
 # Fonksiyon: Bash Yükleme
 
-function install_bash() {
-    echo -e "${GREEN}Bash yükleniyor...${NC}"
+function install_bashtop() {
+    echo -e "${GREEN}Bashtop yükleniyor...${NC}"
     git clone https://github.com/aristocratos/bashtop.git
     cd bashtop
     sudo make install
-
-    # Bash sürümünü yükseltmek için
-    wget http://ftp.gnu.org/gnu/bash/bash-4.4.18.tar.gz
-    tar xf bash-4.4.18.tar.gz
-    cd bash-4.4.18/
-    ./configure
-    make
-    sudo make install
-
-    echo -e "${GREEN}Bash başarıyla yüklendi.${NC}"
+    echo -e "${GREEN}Bashtop başarıyla yüklendi.${NC}"
 }
+
+# Gerekli bağımlılıkları yükle
+echo -e "${GREEN}Gerekli bağımlılıklar yükleniyor...${NC}"
+# Eğer sisteminizde Python3 ve pip3 yoksa, aşağıdaki komutları kullanarak yükleyebilirsiniz.
+sudo apt-get update
+sudo apt-get install -y python3 python3-pip
+
+# Python için yapılan yüklemelerden sonra pip kullanarak bashtop'u yükleyebilirsiniz.
+ 
 
  
 
