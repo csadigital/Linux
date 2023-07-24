@@ -16,40 +16,39 @@ function install_required_tools() {
 # Fonksiyon: Bash Yükleme
 function install_bash() {
     echo -e "${GREEN}Bash yükleniyor...${NC}"
-    wget http://ftp.gnu.org/gnu/bash/bash-4.4.18.tar.gz
-    tar xf bash-4.4.18.tar.gz
-    cd bash-4.4.18/
-    ./configure
-    make
-    sudo make install
+  wget http://ftp.gnu.org/gnu/bash/bash-4.4.18.tar.gz
+tar xf bash-4.4.18.tar.gz
+cd bash-4.4.18/
+./configure
+make
+make install
+sh
+bash -version
+git clone https://github.com/aristocratos/bashtop.git
+cd bashtop
+sudo make install
     echo -e "${GREEN}Bash başarıyla yüklendi.${NC}"
 }
 
 # Fonksiyon: Bashtop'u Sistem Monitörü olarak başlat
 function start_system_monitor() {
     echo -e "${GREEN}Sistem Monitörü başlatılıyor...${NC}"
-    sudo yum install epel-release -y
-    sudo yum install bashtop -y
     bashtop
 }
 
 # Fonksiyon: CSF Algılama Modu Aç
 function enable_csf_detection() {
     echo -e "${GREEN}CSF Algılama Modu açılıyor...${NC}"
-    sudo systemctl enable csf
-    sudo systemctl start csf
-    sudo systemctl enable lfd
-    sudo systemctl start lfd
+    chkconfig --levels 235 csf on
+    chkconfig --levels 235 lfd on
     echo -e "${GREEN}CSF Algılama Modu başarıyla açıldı.${NC}"
 }
 
 # Fonksiyon: CSF Algılama Modu Kapat
 function disable_csf_detection() {
     echo -e "${GREEN}CSF Algılama Modu kapatılıyor...${NC}"
-    sudo systemctl stop csf
-    sudo systemctl disable csf
-    sudo systemctl stop lfd
-    sudo systemctl disable lfd
+     chkconfig --levels 235 csf off
+     chkconfig --levels 235 lfd off
     echo -e "${GREEN}CSF Algılama Modu başarıyla kapatıldı.${NC}"
 }
 
@@ -76,7 +75,7 @@ function configure_litespeed() {
 
 # Fonksiyon: SSH Ayarlar
 function configure_ssh() {
-    echo -e "${GREEN}SSH ayarları yapılıyor...${NC}"
+    echo -e "${GREEN}SSH Portu 2220 Olarak Değiştiriliyor ...${NC}"
     sudo sed -i 's/#Port 22/Port 2220/' /etc/ssh/sshd_config
     sudo systemctl restart sshd
 }
