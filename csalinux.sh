@@ -9,9 +9,7 @@ NC='\033[0m' # Renk sıfırlama
 # Fonksiyon: Gerekli araçları yükle
 function install_required_tools() {
     echo -e "${GREEN}Gerekli araçlar yükleniyor...${NC}"
-sudo yum install git -y && sudo yum install curl -y && sudo yum install nano -y
-
-
+    sudo yum install git curl nano -y
     echo -e "${GREEN}Gerekli araçlar başarıyla yüklendi.${NC}"
 }
 
@@ -30,29 +28,42 @@ function install_bash() {
 # Fonksiyon: Bashtop'u Sistem Monitörü olarak başlat
 function start_system_monitor() {
     echo -e "${GREEN}Sistem Monitörü başlatılıyor...${NC}"
+    sudo yum install epel-release -y
+    sudo yum install bashtop -y
     bashtop
 }
 
 # Fonksiyon: CSF Algılama Modu Aç
 function enable_csf_detection() {
     echo -e "${GREEN}CSF Algılama Modu açılıyor...${NC}"
-    sudo chkconfig --levels 235 csf on
-    sudo chkconfig --levels 235 lfd on
+    sudo systemctl enable csf
+    sudo systemctl start csf
+    sudo systemctl enable lfd
+    sudo systemctl start lfd
     echo -e "${GREEN}CSF Algılama Modu başarıyla açıldı.${NC}"
 }
 
 # Fonksiyon: CSF Algılama Modu Kapat
 function disable_csf_detection() {
     echo -e "${GREEN}CSF Algılama Modu kapatılıyor...${NC}"
-    sudo chkconfig --levels 235 csf off
-    sudo chkconfig --levels 235 lfd off
+    sudo systemctl stop csf
+    sudo systemctl disable csf
+    sudo systemctl stop lfd
+    sudo systemctl disable lfd
     echo -e "${GREEN}CSF Algılama Modu başarıyla kapatıldı.${NC}"
 }
 
 # Fonksiyon: CSF Kurulum ve Ayarlar
 function install_csf() {
     echo -e "${GREEN}CSF kurulumu ve ayarları yapılıyor...${NC}"
-    curl -Ls https://raw.githubusercontent.com/csadigital/Linux/main/csfinstall.sh | bash
+    sudo yum install wget perl-libwww-perl perl-LWP-Protocol-https -y
+    cd /usr/src
+    sudo rm -fv csf.tgz
+    sudo wget https://download.configserver.com/csf.tgz
+    sudo tar -xzf csf.tgz
+    cd csf
+    sudo sh install.sh
+    echo -e "${GREEN}CSF kurulumu ve ayarları tamamlandı.${NC}"
 }
 
 # Fonksiyon: Litespeed Ayarlar
@@ -168,46 +179,15 @@ function install_pleskpanel() {
     sh <(curl https://installer.plesk.com/plesk-installer || wget -O - https://installer.plesk.com/plesk-installer)
 }
 
-# Fonksiyon: Kurulumlar Menüsü
-function installation_menu() {
-    while true
-    do
-        clear
-        echo -e "${CYAN}========== CSA Linux Bot - Kurulumlar Menüsü ==========${NC}"
-        echo -e "${GREEN}1. cPanel Kurulumu"
-        echo "2. DirectAdmin Kurulumu"
-        echo "3. CyberPanel Kurulumu"
-        echo "4. CentOS Web Panel (CWP) Kurulumu"
-        echo "5. Plesk Panel Kurulumu"
-        echo -e "0. Geri Dön${NC}"
-        echo -n "Seçiminizi girin: "
-
-        read choice
-
-        case $choice in
-            1) install_cpanel ;;
-            2) install_directadmin ;;
-            3) install_cyberpanel ;;
-            4) install_cwp ;;
-            5) install_pleskpanel ;;
-            0) return ;;
-            *) echo -e "${RED}Geçersiz seçim. Tekrar deneyin.${NC}" ; sleep 2 ;;
-        esac
-
-        echo -e "${CYAN}Kurulum tamamlandı! Devam etmek için Enter tuşuna basın.${NC}"
-        read
-    done
-}
-
 # Ana menü
 function main_menu() {
     while true
     do
         clear
         echo -e "${CYAN}========== CSA Linux Bot - Linux Ayar Scripti ==========${NC}"
-        echo -e "${GREEN}1. Gerekli Araçları Yükle (git, curl, wget)"
+        echo -e "${GREEN}1. Gerekli Araçları Yükle (git, curl, nano)"
         echo "2. Bash Yükle"
-        echo "3. Sistem Monitörü Olarak Başlat"
+        echo "3. Sistem Monitörü Olarak Başlat (Bashtop)"
         echo "4. CSF Algılama Modu Aç"
         echo "5. CSF Algılama Modu Kapat"
         echo "6. CSF Kurulum ve Ayarlar"
