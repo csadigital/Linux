@@ -14,21 +14,25 @@ function install_required_tools() {
 }
 
 # Fonksiyon: Bash Yükleme
+
 function install_bash() {
     echo -e "${GREEN}Bash yükleniyor...${NC}"
-  wget http://ftp.gnu.org/gnu/bash/bash-4.4.18.tar.gz
-tar xf bash-4.4.18.tar.gz
-cd bash-4.4.18/
-./configure
-make
-make install
-sh
-bash -version
-git clone https://github.com/aristocratos/bashtop.git
-cd bashtop
-sudo make install
+    git clone https://github.com/aristocratos/bashtop.git
+    cd bashtop
+    sudo make install
+
+    # Bash sürümünü yükseltmek için
+    wget http://ftp.gnu.org/gnu/bash/bash-4.4.18.tar.gz
+    tar xf bash-4.4.18.tar.gz
+    cd bash-4.4.18/
+    ./configure
+    make
+    sudo make install
+
     echo -e "${GREEN}Bash başarıyla yüklendi.${NC}"
 }
+
+ 
 
 # Fonksiyon: Bashtop'u Sistem Monitörü olarak başlat
 function start_system_monitor() {
