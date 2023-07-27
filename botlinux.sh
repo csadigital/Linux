@@ -26,23 +26,10 @@ log_file="$BASE_DIR/server_monitor_log.txt"
 get_current_stats() {
   local timestamp=$(date "+%Y-%m-%d %H:%M:%S")
   local load=$(uptime | awk '{print $10 $11 $12}')
-  local netstat=$(cat /proc/net/dev | awk '/eth0/{print $2, $3}')
+  local netstat=$(cat /proc/net/dev | awk '/eth0/{print $2, $10}')
   local ramstat=$(free | awk '/Mem/{print $3}')
   local cpustat=$(top -bn 1 | grep "Cpu(s)" | awk '{print 100 - $8}')
   echo "$timestamp|$load|$netstat|$ramstat|$cpustat"
-}
-
-# Verileri ekrana gösteren fonksiyon
-show_stats_on_screen() {
-  local title="$1"
-  local ylabel="$2"
-  gnuplot -persist <<- EOF
-    set title "$title"
-    set ylabel "$ylabel"
-    plot "$log_file" using 1:2 with lines title "Load Average", \
-         "" using 1:5 with lines title "CPU Usage (%)", \
-         "" using 1:4 with lines title "RAM Usage"
-EOF
 }
 
 # İstatistikleri dosyaya kaydeden fonksiyon
@@ -62,7 +49,13 @@ generate_gnuplot_script() {
 start_server_monitor() {
   source "$BASE_DIR/telegram_config.sh"
 
-  # Veri toplama ve ekrana grafik çizme döngüsü
+  # Gnuplot komut dosyasını oluştur
+  generate_gnuplot_script "Load Average" "Load" "$log_file"
+
+  # 48 saatlik log dosyasını temizle ve başlık ekler
+  echo "Timestamp|Load Average|Network Rx|RAM Usage|CPU Usage (%)" > "$log_file"
+
+  # Veri toplama ve tablo ile gösterme döngüsü
   while true; do
     # Şu anki istatistikleri al
     current_stats=$(get_current_stats)
@@ -70,10 +63,14 @@ start_server_monitor() {
     # Verileri dosyaya ekle
     append_to_log_file "$current_stats"
 
-    # Grafikleri ekranda göster
+    # Ekrana tabloyu ve grafikleri göster
     clear
-    show_stats_on_screen "Server Monitor" "Percentage (%)"
-    
+    echo "Timestamp      | Load Average | Network Rx   | RAM Usage | CPU Usage (%)"
+    echo "-------------------------------------------------------------------------------"
+    cat "$log_file" | tail -n 10 | awk 'BEGIN {FS="|"} {printf "%-15s| %-13s| %-14s| %-10s| %-13s\n", $1, $2, $3, $4, $5, $6}'
+    echo
+    gnuplot "$BASE_DIR/gnuplot_script.plt" # Grafikleri çiz
+
     # 5 saniyede bir döngüyü tekrarla
     sleep 5
   done
@@ -81,12 +78,6 @@ start_server_monitor() {
 
 # Sunucu monitorü kurulum fonksiyonu
 setup_server_monitor() {
-  # Gnuplot komut dosyasını oluştur
-  generate_gnuplot_script "Load Average" "Load" "$log_file"
-
-  # 48 saatlik log dosyasını temizle ve başlık ekler
-  echo "Timestamp|Load Average|Network Rx|Network Tx|RAM Usage|CPU Usage (%)" > "$log_file"
-
   # Telegram bot ayarlarını kullanıcıdan al
   read -p "Telegram Bot Token (boş bırakarak devre dışı bırakın): " TELEGRAM_TOKEN
   read -p "Telegram Chat ID (boş bırakarak devre dışı bırakın): " TELEGRAM_CHAT_ID
