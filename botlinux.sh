@@ -3,10 +3,6 @@
 # Gerekli paketleri yükle
 sudo yum install -y sysstat jq gnuplot
 
-# Sunucu monitor scriptini oluştur
-cat << 'EOF' > server_monitor.sh
-#!/bin/bash
-
 # Scriptin çalıştığı dizin
 BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -16,21 +12,15 @@ TELEGRAM_CHAT_ID=""
 
 # Gnuplot komut dosyasının şablonu
 gnuplot_script_template='
-set terminal pngcairo enhanced font "arial,10" fontscale 1.0 size 800, 600
-set output "%s"
-set xdata time
-set timefmt "%Y-%m-%d %H:%M:%S"
-set format x "%H:%M:%S"
+set terminal dumb ansi 120 40
+set autoscale
 set xlabel "Time"
 set ylabel "%s"
-plot "%s" using 1:2 with lines title "%s"
+plot "-" using 1:2 with lines title "%s"
 '
 
 # 48 saatlik verileri saklayacak dosya
 log_file="$BASE_DIR/server_monitor_log.txt"
-
-# Gnuplot için grafik dosyası adı
-graph_file="$BASE_DIR/graph.png"
 
 # İstatistikleri belirli aralıklarla alacak fonksiyon
 get_current_stats() {
@@ -42,19 +32,22 @@ get_current_stats() {
   echo "$timestamp|$load|$netstat|$ramstat|$cpustat"
 }
 
+# Verileri ekrana gösteren fonksiyon
+show_stats_on_screen() {
+  local title="$1"
+  local ylabel="$2"
+  gnuplot -persist <<- EOF
+    set title "$title"
+    set ylabel "$ylabel"
+    plot "$log_file" using 1:2 with lines title "Load Average", \
+         "" using 1:5 with lines title "CPU Usage (%)", \
+         "" using 1:4 with lines title "RAM Usage"
+EOF
+}
+
 # İstatistikleri dosyaya kaydeden fonksiyon
 append_to_log_file() {
   echo "$1" >> "$log_file"
-}
-
-# Telegram mesajı gönderen fonksiyon
-send_telegram_message() {
-  local message="$1"
-  if [ ! -z "$TELEGRAM_TOKEN" ] && [ ! -z "$TELEGRAM_CHAT_ID" ]; then
-    curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage" \
-      -d "chat_id=$TELEGRAM_CHAT_ID" \
-      -d "text=$message"
-  fi
 }
 
 # Gnuplot komut dosyası oluşturan fonksiyon
@@ -62,11 +55,32 @@ generate_gnuplot_script() {
   local title="$1"
   local ylabel="$2"
   local datafile="$3"
-  printf "$gnuplot_script_template" "$graph_file" "$ylabel" "$datafile" "$title" > "$BASE_DIR/gnuplot_script.plt"
+  printf "$gnuplot_script_template" "$ylabel" "$title" > "$BASE_DIR/gnuplot_script.plt"
 }
 
-# Scriptin kurulumu
-setup() {
+# Sunucu monitorü başlatma fonksiyonu
+start_server_monitor() {
+  source "$BASE_DIR/telegram_config.sh"
+
+  # Veri toplama ve ekrana grafik çizme döngüsü
+  while true; do
+    # Şu anki istatistikleri al
+    current_stats=$(get_current_stats)
+
+    # Verileri dosyaya ekle
+    append_to_log_file "$current_stats"
+
+    # Grafikleri ekranda göster
+    clear
+    show_stats_on_screen "Server Monitor" "Percentage (%)"
+    
+    # 5 saniyede bir döngüyü tekrarla
+    sleep 5
+  done
+}
+
+# Sunucu monitorü kurulum fonksiyonu
+setup_server_monitor() {
   # Gnuplot komut dosyasını oluştur
   generate_gnuplot_script "Load Average" "Load" "$log_file"
 
@@ -84,60 +98,36 @@ setup() {
   (crontab -l 2>/dev/null; echo "@reboot $BASE_DIR/server_monitor.sh start") | crontab -
 }
 
-# Scriptin çalıştırılması
-start() {
-  source "$BASE_DIR/telegram_config.sh"
-
-  # Veri toplama ve grafik çizme döngüsü
-  while true; do
-    # Şu anki istatistikleri al
-    current_stats=$(get_current_stats)
-
-    # Verileri dosyaya ekle
-    append_to_log_file "$current_stats"
-
-    # Grafik çiz
-    gnuplot "$BASE_DIR/gnuplot_script.plt"
-
-    # 5 saniyede bir döngüyü tekrarla
-    sleep 5
-  done
-}
-
-# Scriptin durdurulması
-stop() {
+# Sunucu monitorü durdurma fonksiyonu
+stop_server_monitor() {
   pkill -f "$BASE_DIR/server_monitor.sh"
 }
 
-# Başlangıçta kurulumu yap
-setup
-
-# Kullanıcıya sunucuyu başlatma seçeneği sun
+# Scriptin ana menüsü
 while true; do
-  select choice in "Başlat" "Durdur" "Çıkış"; do
-    case "$choice" in
-      "Başlat")
-        start &
-        echo "Sunucu Monitor başlatıldı. Grafik dosyası: $BASE_DIR/graph.png"
-        break
-        ;;
-      "Durdur")
-        stop
-        echo "Sunucu Monitor durduruldu."
-        break
-        ;;
-      "Çıkış")
-        exit 0
-        ;;
-      *)
-        echo "Geçersiz seçenek."
-        ;;
-    esac
-  done
+  echo "1. Sunucu Monitorü Başlat"
+  echo "2. Sunucu Monitorü Durdur"
+  echo "3. Çıkış"
+  read -p "Seçiminizi yapın (1/2/3): " choice
+
+  case "$choice" in
+    1)
+      setup_server_monitor
+      start_server_monitor &
+      echo "Sunucu Monitor başlatıldı."
+      ;;
+    2)
+      stop_server_monitor
+      echo "Sunucu Monitor durduruldu."
+      ;;
+    3)
+      echo "Çıkış yapılıyor..."
+      exit 0
+      ;;
+    *)
+      echo "Geçersiz seçenek. Lütfen tekrar deneyin."
+      ;;
+  esac
+
+  echo
 done
-EOF
-
-# Scriptleri çalıştırılabilir hale getir
-chmod +x server_monitor.sh
-
-echo "Kurulum tamamlandı. Sunucu monitorü başlatmak için sunucuyu yeniden başlatın."
