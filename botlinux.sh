@@ -10,26 +10,27 @@ BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 TELEGRAM_TOKEN=""
 TELEGRAM_CHAT_ID=""
 
-# Gnuplot komut dosyasının şablonu
-gnuplot_script_template='
-set terminal dumb ansi 120 40
-set autoscale
-set xlabel "Time"
-set ylabel "%s"
-plot "-" using 1:2 with lines title "%s"
-'
-
 # 48 saatlik verileri saklayacak dosya
 log_file="$BASE_DIR/server_monitor_log.txt"
+
+# Gnuplot komut dosyasının şablonu
+gnuplot_script_template='
+set terminal dumb ansi 120 40 enhanced
+set autoscale
+set xlabel "Time"
+set ylabel "Load Average"
+set key autotitle columnheader
+plot "-" using 1:2 with lines
+'
+
+# Telegram bot script dosyası
+telegram_bot_script="$BASE_DIR/telegram_bot.sh"
 
 # İstatistikleri belirli aralıklarla alacak fonksiyon
 get_current_stats() {
   local timestamp=$(date "+%Y-%m-%d %H:%M:%S")
   local load=$(uptime | awk '{print $10 $11 $12}')
-  local netstat=$(cat /proc/net/dev | awk '/eth0/{print $2, $10}')
-  local ramstat=$(free | awk '/Mem/{print $3}')
-  local cpustat=$(top -bn 1 | grep "Cpu(s)" | awk '{print 100 - $8}')
-  echo "$timestamp|$load|$netstat|$ramstat|$cpustat"
+  echo "$timestamp|$load"
 }
 
 # İstatistikleri dosyaya kaydeden fonksiyon
@@ -39,10 +40,24 @@ append_to_log_file() {
 
 # Gnuplot komut dosyası oluşturan fonksiyon
 generate_gnuplot_script() {
-  local title="$1"
-  local ylabel="$2"
-  local datafile="$3"
-  printf "$gnuplot_script_template" "$ylabel" "$title" > "$BASE_DIR/gnuplot_script.plt"
+  printf "$gnuplot_script_template" > "$BASE_DIR/gnuplot_script.plt"
+}
+
+# Telegram bot'a mesaj gönderen fonksiyon
+send_telegram_message() {
+  local message="$1"
+  curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage" -d "chat_id=$TELEGRAM_CHAT_ID&text=$message" >/dev/null
+}
+
+# Sunucu yükünü kontrol eden fonksiyon
+check_load_average() {
+  local load_average=$(uptime | awk -F'load average:' '{print $2}' | xargs)
+  local threshold=3.0
+
+  if (( $(echo "$load_average >= $threshold" | bc -l) )); then
+    local message="Sunucu yükü yüksek! Load Average: $load_average"
+    send_telegram_message "$message"
+  fi
 }
 
 # Sunucu monitorü başlatma fonksiyonu
@@ -50,10 +65,10 @@ start_server_monitor() {
   source "$BASE_DIR/telegram_config.sh"
 
   # Gnuplot komut dosyasını oluştur
-  generate_gnuplot_script "Load Average" "Load" "$log_file"
+  generate_gnuplot_script
 
   # 48 saatlik log dosyasını temizle ve başlık ekler
-  echo "Timestamp|Load Average|Network Rx|RAM Usage|CPU Usage (%)" > "$log_file"
+  echo "Timestamp|Load Average" > "$log_file"
 
   # Veri toplama ve tablo ile gösterme döngüsü
   while true; do
@@ -63,13 +78,13 @@ start_server_monitor() {
     # Verileri dosyaya ekle
     append_to_log_file "$current_stats"
 
-    # Ekrana tabloyu ve grafikleri göster
+    # Grafikleri ekranda göster
     clear
-    echo "Timestamp      | Load Average | Network Rx   | RAM Usage | CPU Usage (%)"
-    echo "-------------------------------------------------------------------------------"
-    cat "$log_file" | tail -n 10 | awk 'BEGIN {FS="|"} {printf "%-15s| %-13s| %-14s| %-10s| %-13s\n", $1, $2, $3, $4, $5, $6}'
-    echo
-    gnuplot "$BASE_DIR/gnuplot_script.plt" # Grafikleri çiz
+    echo "Sunucu Monitörü - Yük Dağılımı"
+    cat "$log_file" | tail -n 10 | gnuplot --persist "$BASE_DIR/gnuplot_script.plt"
+
+    # Yüksek yükü kontrol et ve Telegram bildirim gönder
+    bash "$telegram_bot_script"
 
     # 5 saniyede bir döngüyü tekrarla
     sleep 5
