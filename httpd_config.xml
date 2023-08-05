@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<httpServerConfig>
+<?xml version="1.0" encoding="UTF-8"?><httpServerConfig>
   <serverName>$HOSTNAME</serverName>
   <workerProcesses>4</workerProcesses>
   <user>nobody</user>
