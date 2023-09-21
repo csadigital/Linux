@@ -1,3 +1,4 @@
+#!/bin/bash
 iptables -A INPUT -p tcp -m tcp --tcp-flags FIN,ACK FIN -j DROP
 iptables -A INPUT -p tcp -m tcp --tcp-flags PSH,ACK PSH -j DROP
 iptables -A INPUT -p tcp -m tcp --tcp-flags ACK,URG URG -j DROP
