@@ -123,18 +123,13 @@
     </CGIRLimit>
     <censorshipControl>
       <enableCensorship>1</enableCensorship>
-      <logLevel>0</logLevel>
+      <logLevel>1</logLevel>
       <defaultAction>deny,log,status:403</defaultAction>
       <uploadTmpDir>/tmp</uploadTmpDir>
       <uploadTmpFilePermission>666</uploadTmpFilePermission>
       <secAuditLogEngine>0</secAuditLogEngine>
-      <secAuditLog>$SERVER_ROOT/logs/security_audit.log</secAuditLog>
+      <secAuditLog>waflog</secAuditLog>
     </censorshipControl>
-    <censorshipRuleSet>
-      <name>Comodo Litespeed</name>
-      <enabled>1</enabled>
-      <ruleSet>Include $SERVER_ROOT/conf/comodo_litespeed/rules.conf</ruleSet>
-    </censorshipRuleSet>
     <accessDenyDir>
       <dir>/</dir>
       <dir>/etc/*</dir>
